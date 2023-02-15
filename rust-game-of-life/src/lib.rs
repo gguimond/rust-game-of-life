@@ -3,6 +3,15 @@ mod utils;
 use wasm_bindgen::prelude::*;
 use std::fmt;
 
+extern crate web_sys;
+
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -76,6 +85,8 @@ impl Universe {
                     (otherwise, _) => otherwise,
                 };
 
+                log!("    it becomes {:?}", next_cell);
+
                 next[idx] = next_cell;
             }
         }
@@ -84,6 +95,8 @@ impl Universe {
     }
     
     pub fn new() -> Universe {
+        utils::set_panic_hook();
+
         let width = 64;
         let height = 64;
 
